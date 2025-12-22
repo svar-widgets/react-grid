@@ -30,8 +30,6 @@ export default [
         localStorage: 'readonly',
         fetch: 'readonly',
         FormData: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
       },
     },
     plugins: {

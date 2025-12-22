@@ -10,6 +10,7 @@ export default function Localization() {
   const { allData: data, countries, users } = useMemo(() => getData(), []);
 
   const [table, setTable] = useState();
+
   function init(api) {
     setTable(api);
   }

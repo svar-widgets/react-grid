@@ -69,7 +69,7 @@ function Tooltip(props) {
       if (id) {
         const data = getTooltipData(id);
         setTooltipData(data);
-        text = getTooltipText(col);
+        text = getTooltipText(col, data);
       }
       const targetCoords = target.getBoundingClientRect();
       const areaEl = areaRef.current;
@@ -86,9 +86,10 @@ function Tooltip(props) {
     return api.getRow(id);
   }
 
-  function getTooltipText(col) {
-    if (typeof col.tooltip === 'function') return col.tooltip(tooltipData);
-    return getRenderValue(tooltipData, col) || '';
+  function getTooltipText(col, data) {
+    data = data || tooltipData;
+    if (typeof col.tooltip === 'function') return col.tooltip(data);
+    return getRenderValue(data, col) || '';
   }
 
   return (

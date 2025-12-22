@@ -15,7 +15,7 @@ import { en } from '@svar-ui/grid-locales';
 
 // stores
 import { EventBusRouter } from '@svar-ui/lib-state';
-import { DataStore, isCommunity } from '@svar-ui/grid-store';
+import { DataStore } from '@svar-ui/grid-store';
 
 // context
 import { context } from '@svar-ui/react-core';
@@ -58,6 +58,7 @@ const Grid = forwardRef(function Grid(
     responsive = null,
     sortMarks,
     undo = false,
+    hotkeys = null,
     ...restProps
   },
   ref,
@@ -159,11 +160,6 @@ const Grid = forwardRef(function Grid(
     [responsive, responsiveLevel],
   );
 
-  const isReorderAvailable = useMemo(() => {
-    let available = !tree;
-    if (!isCommunity()) available = true;
-    return available ? reorder : false;
-  }, [tree, reorder]);
 
   const _skin = useContext(context.theme);
 
@@ -183,6 +179,7 @@ const Grid = forwardRef(function Grid(
         tree,
         sortMarks: sortMarks || prev.sortMarks,
         undo,
+        reorder,
         _skin,
         _select: select,
       });
@@ -199,6 +196,7 @@ const Grid = forwardRef(function Grid(
     tree,
     sortMarks,
     undo,
+    reorder,
     _skin,
     select,
     init,
@@ -216,6 +214,7 @@ const Grid = forwardRef(function Grid(
       tree,
       sortMarks: sortMarks || {},
       undo,
+      reorder,
       _skin,
       select,
     });
@@ -240,7 +239,6 @@ const Grid = forwardRef(function Grid(
           rowStyle={rowStyle}
           columnStyle={columnStyle}
           cellStyle={cellStyle}
-          reorder={isReorderAvailable}
           onReorder={onReorder}
           multiselect={multiselect}
           autoRowHeight={autoRowHeight}
@@ -248,6 +246,7 @@ const Grid = forwardRef(function Grid(
           clientHeight={clientHeight}
           responsiveLevel={responsiveLevel}
           resize={resize}
+          hotkeys={hotkeys}
         />
       </Locale>
     </StoreContext.Provider>

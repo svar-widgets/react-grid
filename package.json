@@ -1,6 +1,6 @@
 {
   "name": "@svar-ui/react-grid",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "description": "Fast, feature-rich React DataGrid with virtual scrolling, cell editing, sorting, filtering, and accessibility support.",
   "productTag": "grid",
   "type": "module",
@@ -63,17 +63,16 @@
     "react-dom": ">=18"
   },
   "dependencies": {
-    "@svar-ui/grid-data-provider": "2.3.0",
-    "@svar-ui/grid-locales": "2.3.0",
-    "@svar-ui/grid-store": "2.3.0",
-    "@svar-ui/lib-dom": "0.9.2",
-    "@svar-ui/lib-react": "1.1.1",
+    "@svar-ui/grid-data-provider": "2.4.0",
+    "@svar-ui/grid-locales": "2.4.0",
+    "@svar-ui/grid-store": "2.4.0",
+    "@svar-ui/lib-dom": "0.11.1",
+    "@svar-ui/lib-react": "1.2.2",
     "@svar-ui/lib-state": "1.9.6",
-    "@svar-ui/lib-svelte": "0.5.2",
-    "@svar-ui/react-core": "2.3.1",
-    "@svar-ui/react-editor": "2.3.1",
-    "@svar-ui/react-filter": "2.3.1",
-    "@svar-ui/react-menu": "2.3.1"
+    "@svar-ui/react-core": "2.4.0",
+    "@svar-ui/react-editor": "2.4.0",
+    "@svar-ui/react-filter": "2.4.0",
+    "@svar-ui/react-menu": "2.4.0"
   },
   "homepage": "https://svar.dev/react/datagrid/",
   "repository": {

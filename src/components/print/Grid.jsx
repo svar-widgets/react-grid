@@ -57,6 +57,7 @@ export default function Grid(props) {
             className={
               'wx-8NTMLH0z wx-row' + (rowStyle ? ' ' + rowStyle(row) : '')
             }
+            style={{ height: `${row.rowHeight || sizes.rowHeight}px` }}
           >
             {columns.map((column) =>
               !column.collapsed ? (

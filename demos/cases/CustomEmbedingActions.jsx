@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { Grid, defaultMenuOptions } from '../../src';
+import { Grid } from '../../src';
 import { ActionMenu } from '@svar-ui/react-menu';
 import { context } from '@svar-ui/react-core';
 
@@ -43,6 +43,29 @@ export default function CustomEmbedingActions() {
     },
   ];
 
+  const options = [
+    {
+      id: 'add-row:before',
+      text: 'Add before',
+      icon: 'wxi-table-row-plus-before',
+    },
+    {
+      id: 'add-row:after',
+      text: 'Add after',
+      icon: 'wxi-table-row-plus-after',
+    },
+    {
+      id: 'duplicate-row',
+      text: 'Duplicate',
+      icon: 'wxi-duplicate',
+    },
+    {
+      id: 'delete-row',
+      text: 'Delete',
+      icon: 'wxi-delete-outline',
+    },
+  ];
+
   function action(actionName, ev) {
     const { row, column, value } = ev;
     const event = `Event: ${actionName}\n`;
@@ -74,19 +97,19 @@ export default function CustomEmbedingActions() {
     if (option) {
       const id = api.getState().selectedRows[0];
       switch (option.id) {
-        case 'add:before':
+        case 'add-row:before':
           api.exec('add-row', { row: {}, before: id });
           break;
-        case 'add:after':
+        case 'add-row:after':
           api.exec('add-row', { row: {}, after: id });
           break;
-        case 'copy':
+        case 'duplicate-row':
           api.exec('add-row', {
             row: { ...api.getRow(id), id: null },
             after: id,
           });
           break;
-        case 'delete':
+        case 'delete-row':
           api.exec('delete-row', { id });
           break;
         default:
@@ -99,10 +122,9 @@ export default function CustomEmbedingActions() {
     <div className="wx-cyNq1uqH demo" style={{ padding: '20px' }}>
       <ActionMenu
         resolver={(id) => id}
-        api={api}
         at={'point'}
         dataKey={'actionId'}
-        options={defaultMenuOptions}
+        options={options}
         onClick={handleClicks}
       >
         <Grid

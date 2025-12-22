@@ -1,5 +1,6 @@
 import type { FC, ComponentProps, ReactNode } from 'react';
 import { ContextMenu as BaseContextMenu } from '@svar-ui/react-menu';
+import { Toolbar as BaseToolbar } from '@svar-ui/react-toolbar';
 
 import type {
   IColumn,
@@ -81,6 +82,9 @@ export declare const Grid: FC<
 
     overlay?: string | FC;
     columns: IColumnConfig[];
+    hotkeys?:
+      | false
+      | { [key: string]: ((e?: KeyboardEvent) => void) | boolean };
   } & IConfig &
     GridActions<TMethodsConfig>
 >;
@@ -93,6 +97,12 @@ export declare const HeaderMenu: FC<{
 
 export declare const ContextMenu: FC<
   ComponentProps<typeof BaseContextMenu> & {
+    api?: IApi;
+  }
+>;
+
+export declare const Toolbar: FC<
+  ComponentProps<typeof BaseToolbar> & {
     api?: IApi;
   }
 >;

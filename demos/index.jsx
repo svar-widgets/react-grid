@@ -23,7 +23,7 @@ const skins = [
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App
-      publicName="Grid"
+      publicName="DataGrid"
       skins={skins}
       productTag="grid"
       Globals={Globals}

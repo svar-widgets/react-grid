@@ -1,0 +1,9 @@
+.demo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+:global(.demo-button-sort) {
+  margin-bottom: 16px;
+}

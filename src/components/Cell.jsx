@@ -13,13 +13,19 @@ export default function Cell(props) {
     cellStyle = null,
     columnStyle = null,
     children,
-    reorder,
   } = props;
 
   const [focusable, setFocusable] = useWritableProp(props.focusable);
 
   const api = useContext(storeContext);
   const focusCell = useStore(api, 'focusCell');
+  const search = useStore(api, 'search');
+  const reorder = useStore(api, 'reorder');
+
+  const shouldHighlight = useMemo(
+    () => search?.rows[row.id] && search.rows[row.id][column.id],
+    [search, row.id, column.id],
+  );
 
   const style = useMemo(
     () =>
@@ -58,9 +64,11 @@ export default function Cell(props) {
   const cellElRef = useRef(null);
 
   useEffect(() => {
-    const needFocus =
-      focusCell?.row === row.id && focusCell?.column === column.id;
-    if (cellElRef.current && focusable && needFocus) cellElRef.current.focus();
+    if (cellElRef.current && focusable) {
+      const needFocus =
+        focusCell?.row === row.id && focusCell?.column === column.id;
+      if (needFocus) cellElRef.current.focus();
+    }
   }, [focusCell, focusable, row.id, column.id]);
 
   const toggleFocusAction = useCallback(() => {
@@ -81,6 +89,13 @@ export default function Cell(props) {
       }
     };
   }, [api, setFocusable]);
+
+  function highlightText(text) {
+    const regex = new RegExp(`(${search.value.trim()})`, 'gi');
+    const parts = String(text).split(regex);
+
+    return parts.map((text) => ({ text, highlight: regex.test(text) }));
+  }
 
   const className = useMemo(() => {
     const shadowToggle =
@@ -145,6 +160,19 @@ export default function Cell(props) {
         />
       ) : children ? (
         children()
+      ) : shouldHighlight ? (
+        <span>
+          {highlightText(getRenderValue(row, column)).map(
+            ({ highlight, text }, index) =>
+              highlight ? (
+                <mark key={index} className="wx-TSCaXsGV wx-search">
+                  {text}
+                </mark>
+              ) : (
+                <span key={index}>{text}</span>
+              ),
+          )}
+        </span>
       ) : (
         getRenderValue(row, column)
       )}

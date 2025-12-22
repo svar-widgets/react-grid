@@ -6,8 +6,9 @@ import { repeatData, repeatColumns } from '../data';
 import { timer, timerEnd } from '../custom/timers';
 
 export default function StaticData() {
-  const [data, setData] = useState([]);
-  const [columns, setColumns] = useState([]);
+  // non-reactive data, similar to Svelte's plain let variables
+  const dataRef = useRef([]);
+  const columnsRef = useRef([]);
 
   const [stats, setStats] = useState(null);
   const [counter, setCounter] = useState(1);
@@ -20,8 +21,8 @@ export default function StaticData() {
   function genAndLoad() {
     timer('gen');
     setStats(null);
-    setData(repeatData(+rows));
-    setColumns(repeatColumns(+cols));
+    dataRef.current = repeatData(+rows);
+    columnsRef.current = repeatColumns(+cols);
     setCounter((c) => c + 1);
     const gen = timerEnd('gen');
 
@@ -76,7 +77,7 @@ export default function StaticData() {
         </Button>
       </div>
       <div style={{ width: '1000px', height: '600px' }}>
-        <Grid key={counter} data={data} columns={columns} split={{ left: 1 }} />
+        <Grid key={counter} data={dataRef.current} columns={columnsRef.current} split={{ left: 1 }} />
       </div>
       {stats && (
         <pre>{`${rows} rows, ${cols} columns, ${rows * cols} cells

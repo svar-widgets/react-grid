@@ -96,31 +96,25 @@ export default function ExternalFilters() {
       <div style={{ maxWidth: 810 }}>
         <div className="wx-vYEb13Ba controls">
           <Field label={'Filter "Date" column'}>
-            {({ id }) => (
-              <DateRangePicker
-                value={dateValue}
-                id={id}
-                clear
-                onChange={({ value }) => {
-                  setDateValue(value);
-                  handleFilter(value, companyValue);
-                }}
-              />
-            )}
+            <DateRangePicker
+              value={dateValue}
+              clear
+              onChange={({ value }) => {
+                setDateValue(value);
+                handleFilter(value, companyValue);
+              }}
+            />
           </Field>
           <Field label={'Filter "Company" column'}>
-            {({ id }) => (
-              <Text
-                value={companyValue}
-                id={id}
-                clear
-                icon={'wxi-search'}
-                onChange={({ value }) => {
-                  setCompanyValue(value);
-                  handleFilter(dateValue, value);
-                }}
-              />
-            )}
+            <Text
+              value={companyValue}
+              clear
+              icon={'wxi-search'}
+              onChange={({ value }) => {
+                setCompanyValue(value);
+                handleFilter(dateValue, value);
+              }}
+            />
           </Field>
         </div>
         <div style={{ height: 400 }}>

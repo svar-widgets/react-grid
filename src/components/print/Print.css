@@ -20,7 +20,7 @@
 
 @media print {
   .wx-print > * {
-    display: none;
+    display: none !important;
   }
 
   .wx-print-container > .wx-print-grid-wrapper {
@@ -29,6 +29,6 @@
   }
 
   .wx-print-container {
-    display: block;
+    display: block !important;
   }
 }

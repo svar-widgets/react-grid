@@ -14,7 +14,7 @@ function ContextMenu() {
       <Locale words={en} optional={true}>
         <ContextMenuLib api={grid}>
           <HeaderMenu api={grid}>
-            <Grid data={data} columns={columns} init={setGrid} />
+            <Grid data={data} columns={columns} init={setGrid} multiselect reorder />
           </HeaderMenu>
         </ContextMenuLib>
       </Locale>

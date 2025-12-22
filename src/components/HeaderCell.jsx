@@ -53,9 +53,13 @@ export default function HeaderCell(props) {
   const sort = useCallback(
     (ev) => {
       if (!column.sort || cell.filter) return;
-      api.exec('sort-rows', { key: cell.id, add: ev.ctrlKey });
+      let order = sortMark?.order;
+      if (order) {
+        order = order === 'asc' ? 'desc' : 'asc';
+      }
+      api.exec('sort-rows', { key: cell.id, add: ev.ctrlKey, order });
     },
-    [api, cell.id, cell.filter, column.sort],
+    [api, cell.id, cell.filter, column.sort, sortMark?.order],
   );
 
   const collapse = useCallback(

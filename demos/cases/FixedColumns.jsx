@@ -14,15 +14,12 @@ function FixedColumns() {
       <h4>Drag the slider to fix columns on the left</h4>
       <div className="wx-VY9RTvAk controls">
         <Field label="Fix columns">
-          {({ id }) => (
-            <Slider
-              min={0}
-              max={4}
-              value={left}
-              onChange={({ value }) => setLeft(value)}
-              id={id}
-            />
-          )}
+          <Slider
+            min={0}
+            max={4}
+            value={left}
+            onChange={({ value }) => setLeft(value)}
+          />
         </Field>
       </div>
 

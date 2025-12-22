@@ -33,14 +33,16 @@ function FilterBuilder() {
     [],
   );
 
+  const api = useRef(null);
+
   const applyFilter = useCallback(({ value }) => {
     const filter = createFilter(value);
     api.current.exec('filter-rows', { filter });
   }, []);
 
   useEffect(() => {
-    applyFilter({ value });
-  }, [])
+    if (api.current) applyFilter({ value });
+  }, [api.current, applyFilter, value])
 
   const options = useMemo(
     () => ({
@@ -61,8 +63,6 @@ function FilterBuilder() {
     ],
     [],
   );
-
-  const api = useRef(null);
 
   return (
     <div style={{ padding: '20px' }}>

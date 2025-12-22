@@ -11,8 +11,7 @@ import { onresize } from '../helpers/actions/onresize';
 import { reorder as drag, getOffset } from '../helpers/actions/reorder';
 import { resetAutoScroll, tryAutoScroll } from '../helpers/actions/dragscroll';
 import { clickOutside, locateAttr, locate, id as toId } from '@svar-ui/lib-dom';
-import { hotkeys } from '@svar-ui/grid-store';
-import { getKeys } from '../helpers/hotkeys';
+import { hotkeys, defaultHotkeys } from '@svar-ui/grid-store';
 import { scrollTo } from '@svar-ui/grid-store';
 import { useStore, delegateClick, useStoreWithCounter } from '@svar-ui/lib-react';
 
@@ -29,7 +28,6 @@ function Layout(props) {
     footer,
     overlay,
     multiselect,
-    reorder,
     onreorder: onReorder,
     rowStyle,
     columnStyle,
@@ -39,6 +37,7 @@ function Layout(props) {
     clientWidth,
     clientHeight,
     responsiveLevel,
+    hotkeys: hotkeysConfig,
   } = props;
 
   const api = useContext(storeContext);
@@ -56,6 +55,8 @@ function Layout(props) {
   const focusCell = useStore(api, 'focusCell');
   const printConfig = useStore(api, '_print');
   const undoState = useStore(api, 'undo');
+  const reorder = useStore(api, 'reorder');
+  const rowHeightFromData = useStore(api, '_rowHeightFromData');
 
   // will be calculated once, after rendering
   const [SCROLLSIZE, setSCROLLSIZE] = useState(0);
@@ -286,6 +287,7 @@ function Layout(props) {
   const renderRows = useMemo(() => {
     let start = 0;
     let deltaTop = 0;
+    const EXTRAROWS = 2;
 
     if (autoRowHeight) {
       let st = scrollTop;
@@ -295,39 +297,83 @@ function Layout(props) {
       }
 
       deltaTop = scrollTop - st;
-      for (let i = Math.max(0, start - 2 - 1); i < start; i++)
+      for (let i = Math.max(0, start - EXTRAROWS - 1); i < start; i++)
         deltaTop -= rowHeightsRef.current[start - i] || defaultRowHeight;
 
-      start = Math.max(0, start - 2);
+      start = Math.max(0, start - EXTRAROWS);
     } else {
+      if (rowHeightFromData) {
+        let startInd = 0;
+        let topHeight = 0;
+        for (let i = 0; i < (data || []).length; i++) {
+          const height = data[i].rowHeight || defaultRowHeight;
+          if (topHeight + height > scrollTop) {
+            startInd = i;
+            break;
+          }
+          topHeight += height;
+        }
+        start = Math.max(0, startInd - EXTRAROWS);
+
+        for (let i = 0; i < start; i++) {
+          deltaTop += data[i].rowHeight || defaultRowHeight;
+        }
+
+        let visibleRowsCount = 0;
+        let currentHeight = 0;
+        for (let i = startInd + 1; i < (data || []).length; i++) {
+          const height = data[i].rowHeight || defaultRowHeight;
+          visibleRowsCount++;
+          if (currentHeight + height > visibleRowsHeight) {
+            break;
+          }
+          currentHeight += height;
+        }
+
+        const end = Math.min(
+          dynamic ? dynamic.rowCount : (data || []).length,
+          startInd + visibleRowsCount + EXTRAROWS,
+        );
+
+        return { d: deltaTop, start, end };
+      }
+
       start = Math.floor(scrollTop / (defaultRowHeight || 1));
-      start = Math.max(0, start - 2);
+      start = Math.max(0, start - EXTRAROWS);
       deltaTop = start * (defaultRowHeight || 0);
     }
 
     const totalCount = dynamic ? dynamic.rowCount : (data || []).length;
-    const end = Math.min(totalCount, start + (visibleRows || 0) + 2);
+    const end = Math.min(totalCount, start + (visibleRows || 0) + EXTRAROWS);
 
     return { d: deltaTop, start, end };
-  }, [autoRowHeight, scrollTop, defaultRowHeight, dynamic, data, visibleRows]);
+  }, [autoRowHeight, rowHeightFromData, scrollTop, defaultRowHeight, dynamic, data, visibleRows, visibleRowsHeight]);
 
   const fullHeight = useMemo(() => {
     const count = dynamic ? dynamic.rowCount : (data || []).length;
-    const base = count * (defaultRowHeight || 0);
+
     if (autoRowHeight) {
       return (
         renderedHeight +
         renderRows.d +
         (count - (renderEnd || 0)) * (defaultRowHeight || 0)
       );
-    } else {
-      return base;
     }
+    if (!rowHeightFromData) {
+      return count * (defaultRowHeight || 0);
+    }
+
+    let totalHeight = 0;
+    for (let i = 0; i < count; i++)
+      totalHeight += (data[i]?.rowHeight || defaultRowHeight);
+
+    return totalHeight;
   }, [
     dynamic,
     data,
     defaultRowHeight,
     autoRowHeight,
+    rowHeightFromData,
     renderedHeight,
     renderRows.d,
     renderEnd,
@@ -417,25 +463,24 @@ function Layout(props) {
     click: (rowId, ev) => {
       if (postDragRef.current) return;
       const column = locateAttr(ev, 'data-col-id');
-
-      // FIXME - fix in store required
-      const activeFocusCell = api.getState().focusCell;
-      if (
-        !activeFocusCell ||
-        (activeFocusCell.row !== rowId || activeFocusCell.column !== column)
-      ) {
-        api.exec('focus-cell', { row: rowId, column, eventSource: 'click' });
-      }
+      if (focusCell?.id !== rowId)
+        api.exec('focus-cell', {
+          row: rowId,
+          column,
+          eventSource: 'click',
+        });
 
       if (selectState === false) return;
 
       const toggle = multiselect && ev.ctrlKey;
       const range = multiselect && ev.shiftKey;
 
-      // FIXME - fix in store required
-      const activeSelectedRows = api.getState().selectedRows;
-      if (activeSelectedRows.length !== 1 || activeSelectedRows[0] !== rowId) {
-        if (selectState) api.exec('select-row', { id: rowId, toggle, range });
+      if (
+        toggle ||
+        selectedRows.length > 1 ||
+        !selectedRows.includes(rowId)
+      ) {
+        api.exec('select-row', { id: rowId, toggle, range });
       }
     },
     'toggle-row': (rowId) => {
@@ -544,7 +589,7 @@ function Layout(props) {
           ? dragNode?.offsetHeight
           : sizes?.rowHeight;
 
-        if (scrollTop === 0 || pos.y > min + rowHeight - 1) {
+        if (dragNode && (scrollTop === 0 || pos.y > min + rowHeight - 1)) {
           const targetRect = targetRow.getBoundingClientRect();
           const dragNodeOffset = getOffset(dragNode);
 
@@ -697,11 +742,16 @@ function Layout(props) {
     const node = tableNodeRef.current;
     if (!node) return;
     const cleanup = hotkeys(node, {
-      keys: getKeys({ undo: undoState }),
+      keys: hotkeysConfig !== false && {
+        ...defaultHotkeys,
+        'ctrl+z': undoState,
+        'ctrl+y': undoState,
+        ...hotkeysConfig,
+      },
       exec: (v) => api.exec('hotkey', v),
     });
     return cleanup.destroy;
-  }, [api, undoState]);
+  }, [api, undoState, hotkeysConfig]);
 
   const scrollConfig = useRef({
     scroll: api.getReactiveState().scroll,
@@ -799,8 +849,8 @@ function Layout(props) {
                     (isSelected ? ' wx-selected' : '') +
                     (isInactive ? ' wx-inactive' : '');
                   const rowStyleProp = autoRowHeight
-                    ? { minHeight: `${defaultRowHeight}px` }
-                    : { height: `${defaultRowHeight}px` };
+                    ? { minHeight: `${row.rowHeight || defaultRowHeight}px` }
+                    : { height: `${row.rowHeight || defaultRowHeight}px` };
                   return (
                     <div
                       key={row.id}
