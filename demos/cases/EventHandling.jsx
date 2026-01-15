@@ -16,7 +16,7 @@ export default function EventHandling() {
   const provider = useMemo(
     () =>
       new RestDataProvider(
-        'https://grid-backend.svar.dev/films',
+        'https://master--svar-grid-go--dev.webix.io/films',
         (o) => o,
       ),
     [],
