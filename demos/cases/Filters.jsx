@@ -41,7 +41,7 @@ export default function Filters() {
       },
       {
         id: 'stars',
-        header: 'Stars',
+        header: { filter: "text" },
         footer: 'Stars',
       },
     ];

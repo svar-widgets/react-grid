@@ -77,7 +77,7 @@ function DemoExplorerContent({
               </a>
               <div className="wx-demos separator"></div>
               <a
-                href={`https://svar.dev/react/grid/`}
+                href={`https://svar.dev/react/datagrid/`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
