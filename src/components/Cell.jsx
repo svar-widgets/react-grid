@@ -72,14 +72,14 @@ export default function Cell(props) {
   }, [focusCell, focusable, row.id, column.id]);
 
   const toggleFocusAction = useCallback(() => {
-    if (focusable && !focusCell) {
+    if (focusable) {
       api.exec('focus-cell', {
         row: row.id,
         column: column.id,
         eventSource: 'focus',
       });
     }
-  }, [api, focusable, focusCell, row.id, column.id]);
+  }, [api, focusable, row.id, column.id]);
 
   useEffect(() => {
     return () => {

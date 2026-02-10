@@ -217,7 +217,7 @@ function Layout(props) {
       dataCols =
         headerCols =
         footerCols =
-          [...leftColumns.columns, ...centerColumns, ...rightColumns.columns];
+        [...leftColumns.columns, ...centerColumns, ...rightColumns.columns];
     } else {
       dataCols = [
         ...leftColumns.columns,
@@ -382,7 +382,7 @@ function Layout(props) {
   const hasVScroll = useMemo(() => {
     return clientWidth && clientHeight
       ? fullHeight + headerHeight + footerHeight >=
-          clientHeight - (fullWidth >= (clientWidth || 0) ? SCROLLSIZE : 0)
+      clientHeight - (fullWidth >= (clientWidth || 0) ? SCROLLSIZE : 0)
       : false;
   }, [
     clientWidth,
@@ -397,8 +397,8 @@ function Layout(props) {
   const contentWidth = useMemo(() => {
     return hasAny && fullWidth <= (clientWidth || 0)
       ? (clientWidth || 0) -
-          (hasHScroll ? 0 : 0) -
-          (hasVScroll ? SCROLLSIZE : 0) // hasHScroll doesn't affect width here; keep logic as in Svelte
+      (hasHScroll ? 0 : 0) -
+      (hasVScroll ? SCROLLSIZE : 0) // hasHScroll doesn't affect width here; keep logic as in Svelte
       : fullWidth;
   }, [hasAny, fullWidth, clientWidth, hasVScroll, SCROLLSIZE, hasHScroll]);
 
@@ -461,6 +461,7 @@ function Layout(props) {
       api.exec('open-editor', data);
     },
     click: (rowId, ev) => {
+      if (ev.target.closest("input")) return;
       if (postDragRef.current) return;
       const column = locateAttr(ev, 'data-col-id');
       if (focusCell?.id !== rowId)
