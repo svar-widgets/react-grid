@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { Calendar, Dropdown } from '@svar-ui/react-core';
+import { clickOutside } from '@svar-ui/lib-dom';
 import './Datepicker.css';
 
-export default function Datepicker({ actions, editor, onAction }) {
+export default function Datepicker({ editor, onAction, onSave, onApply, onCancel }) {
   const [value] = useState(() => editor.value || new Date());
   const [template] = useState(() => editor.config?.template);
   const [cell] = useState(() => editor.config?.cell);
 
   function updateValue({ value }) {
-    actions.updateValue(value);
-    actions.save();
+    onApply(value);
+    onSave();
   }
 
   const nodeRef = useRef(null);
+  const [calendarContainer, setCalendarContainer] = useState(null);
 
   useEffect(() => {
     if (nodeRef.current) {
@@ -23,13 +25,19 @@ export default function Datepicker({ actions, editor, onAction }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (!calendarContainer) return;
+    const cleanup = clickOutside(calendarContainer, () => onSave(true));
+    return () => cleanup.destroy();
+  }, [calendarContainer, onSave]);
+
   return (
     <>
       <div
         className="wx-lNWNYUb6 wx-value"
         ref={nodeRef}
         tabIndex={0}
-        onClick={() => actions.cancel()}
+        onClick={onCancel}
         onKeyDown={(ev) => ev.preventDefault()}
       >
         {template ? (
@@ -44,11 +52,13 @@ export default function Datepicker({ actions, editor, onAction }) {
         )}
       </div>
       <Dropdown width={'auto'}>
-        <Calendar
-          value={value}
-          onChange={updateValue}
-          buttons={editor.config?.buttons}
-        />
+        <div ref={setCalendarContainer} className="wx-lNWNYUb6">
+          <Calendar
+            value={value}
+            onChange={updateValue}
+            buttons={editor.config?.buttons}
+          />
+        </div>
       </Dropdown>
     </>
   );

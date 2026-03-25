@@ -64,8 +64,8 @@ export default function CustomCells() {
           footer
           cellStyle={(row, col) => {
             let css = '';
-            if (col.id == 'id') css = 'vcenter';
-            else if (col.id == 'checked') css = 'vcentercontrol';
+            if (col.id == 'id') css = 'wx-YnGZuqct vcenter';
+            else if (col.id == 'checked') css = 'wx-YnGZuqct vcentercontrol';
             return css;
           }}
           onCustomCheck={(ev) => action('checkbox', ev)}

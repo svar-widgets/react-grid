@@ -1,3 +1,25 @@
+## 2.6.0
+
+### New features
+
+- Multiselect inline editor
+- Ability to register custom inline editors
+
+### Updates
+
+- Integration with FilterQuery
+
+### Fixes
+
+- Dropdown editors are cut off in small tables
+- DataGrid fails to initialize in SvelteKit with serverside rendering
+- Items with string ids fail in some operations
+- Multiple sorting and selection does not work on MacOs
+- Error in fetching Typescript definitions from store
+- API `ref` is not recognized in Typescript projects
+- Select editors: random rows are selected on value change
+- Datepicker editor: clicking on dates outside this month set the incorrect date
+
 ## Version 2.5.2
 
 ### Fixes
@@ -42,7 +64,7 @@
 
 ### Updates
 
-- The package migrated from `@svar-react/grid` to `@svar-ui/react-grid`
+- The package migrated from `wx-react-grid` to `@svar-ui/react-grid`
 
 ### Fixes
 

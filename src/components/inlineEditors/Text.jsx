@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { clickOutside } from '@svar-ui/lib-dom';
 import './Text.css';
 
 function Text(props) {
-  const { actions, editor } = props;
+  const { editor, onSave, onApply } = props;
 
   const [value, setValue] = useState(editor?.value || '');
 
@@ -11,14 +12,20 @@ function Text(props) {
     if (node.current) node.current.focus();
   }, []);
 
+  useEffect(() => {
+    if (!node.current) return;
+    const cleanup = clickOutside(node.current, () => onSave(true));
+    return () => cleanup.destroy();
+  }, [onSave]);
+
   function updateValue() {
     if (!node.current) return;
     setValue(node.current.value);
-    actions.updateValue(node.current.value);
+    onApply(node.current.value);
   }
 
   function closeAndSave({ key }) {
-    if (key === 'Enter') actions.save();
+    if (key === 'Enter') onSave();
   }
 
   return (

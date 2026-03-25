@@ -4,6 +4,7 @@ import { useStore } from '@svar-ui/lib-react';
 import { resize } from '../helpers/actions/resize';
 import { getCssName, getStyle } from '../helpers/columnWidth';
 import Filter from './inlineFilters/Filter.jsx';
+import { setID } from '@svar-ui/lib-dom';
 import './HeaderCell.css';
 
 export default function HeaderCell(props) {
@@ -57,7 +58,7 @@ export default function HeaderCell(props) {
       if (order) {
         order = order === 'asc' ? 'desc' : 'asc';
       }
-      api.exec('sort-rows', { key: cell.id, add: ev.ctrlKey, order });
+      api.exec('sort-rows', { key: cell.id, add: ev.ctrlKey || ev.metaKey, order });
     },
     [api, cell.id, cell.filter, column.sort, sortMark?.order],
   );
@@ -164,7 +165,7 @@ export default function HeaderCell(props) {
         tabIndex={0}
         onKeyDown={toggleCollapseColumn}
         onClick={collapse}
-        data-header-id={column.id}
+        data-header-id={setID(column.id)}
       >
         <div className="wx-RsQD74qC wx-text" style={collapsedTextStyle}>
           {cell.text || ''}
@@ -178,7 +179,7 @@ export default function HeaderCell(props) {
       className={'wx-RsQD74qC ' + normalClassName}
       style={cellStyle}
       onClick={sort}
-      data-header-id={column.id}
+      data-header-id={setID(column.id)}
       tabIndex={!cell._hidden && column.sort && !cell.filter ? 0 : undefined}
       role="columnheader"
       aria-colindex={cell._colindex}

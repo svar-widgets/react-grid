@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getRenderValue } from '@svar-ui/grid-store';
+import { getID } from '@svar-ui/lib-dom';
 import './Tooltip.css';
 
 function Tooltip(props) {
@@ -15,8 +16,8 @@ function Tooltip(props) {
   function findAttribute(node) {
     while (node) {
       if (node.getAttribute) {
-        const id = node.getAttribute('data-row-id');
-        const colId = node.getAttribute('data-col-id');
+        const id = getID(node, 'data-row-id');
+        const colId = getID(node, 'data-col-id');
         if (id && api && colId) {
           const col = api.getColumn(colId);
           return { id, col, target: node };

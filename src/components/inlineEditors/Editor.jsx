@@ -2,7 +2,6 @@ import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import storeContext from '../../context';
 import { useStore } from '@svar-ui/lib-react';
 import { getStyle } from '../../helpers/columnWidth';
-import { clickOutside } from '@svar-ui/lib-dom';
 import { editors } from './editors';
 import './Editor.css';
 
@@ -14,9 +13,11 @@ export default function Editor({ column, row }) {
     (ignore, cell) => {
       api.exec('close-editor', { ignore });
       if (cell) {
-        api.exec('focus-cell', {
-          ...cell,
-          eventSource: 'click',
+        setTimeout(() => {
+          api.exec('focus-cell', {
+            ...cell,
+            eventSource: 'click',
+          });
         });
       }
     },
@@ -46,9 +47,15 @@ export default function Editor({ column, row }) {
 
   const keyHandler = useCallback(
     (ev) => {
-      if (ev.key === 'Enter' && editor) cancel();
+      if (ev.key === 'Enter' && editor) {
+        if (column.editor.type === 'multiselect') {
+          updateValue(editor.value);
+        } else {
+          cancel();
+        }
+      }
     },
-    [editor, cancel],
+    [editor, column.editor, cancel, updateValue],
   );
 
   const computedStyle = useMemo(
@@ -66,19 +73,12 @@ export default function Editor({ column, row }) {
   const Component = useMemo(() => {
     let ed = column.editor;
     if (typeof ed === 'function') ed = ed(row, column);
+    if (!ed) return null;
     let type = typeof ed === 'string' ? ed : ed.type;
     return editors[type];
   }, [column, row]);
 
   const rootRef = useRef(null);
-
-  useEffect(() => {
-    if (!rootRef.current) return;
-    const destroy = clickOutside(rootRef.current, () => save(true));
-    return () => {
-      if (typeof destroy === 'function') destroy();
-    };
-  }, [save]);
 
   useEffect(() => {
     if (!rootRef.current) return;
@@ -114,7 +114,9 @@ export default function Editor({ column, row }) {
       {Component ? (
         <Component
           editor={editor}
-          actions={{ save, cancel, updateValue }}
+          onSave={save}
+          onApply={updateValue}
+          onCancel={cancel}
           onAction={({ action, data }) => api.exec(action, data)}
         />
       ) : null}

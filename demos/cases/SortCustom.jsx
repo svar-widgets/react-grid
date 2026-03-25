@@ -57,7 +57,7 @@ export default function SortCustom() {
 	}
 
 	return (
-		<div className="demo-container">
+		<div className="wx-N7vJtLhF demo-container">
 			<div>
 				<h4>Custom sorting function can be specified in columns config</h4>
 				<Grid data={data} columns={columnsCustomSort} />

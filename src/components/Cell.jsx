@@ -4,6 +4,7 @@ import { useStore } from '@svar-ui/lib-react';
 import { useWritableProp } from '@svar-ui/lib-react';
 import { getStyle } from '../helpers/columnWidth';
 import { getRenderValue } from '@svar-ui/grid-store';
+import { setID } from '@svar-ui/lib-dom';
 import './Cell.css';
 
 export default function Cell(props) {
@@ -118,8 +119,8 @@ export default function Cell(props) {
       ref={cellElRef}
       onFocus={toggleFocusAction}
       style={style}
-      data-row-id={row.id}
-      data-col-id={column.id}
+      data-row-id={setID(row.id)}
+      data-col-id={setID(column.id)}
       tabIndex={focusable ? '0' : '-1'}
       role={'gridcell'}
       aria-colindex={column._colindex}

@@ -14,6 +14,7 @@ import ExternalEditorTasklist from './cases/ExternalEditorTasklist.jsx';
 import FillspaceColumns from './cases/FillspaceColumns.jsx';
 import FilterBar from './cases/FilterBar.jsx';
 import FilterBuilder from './cases/FilterBuilder.jsx';
+import FilterQuery from './cases/FilterQuery.jsx';
 import FilterSimpleFilterBuilder from './cases/FilterSimpleFilterBuilder.jsx';
 import Filters from './cases/Filters.jsx';
 import FiltersCustom from './cases/FiltersCustom.jsx';
@@ -207,6 +208,12 @@ export const links = [
     'Filter data with FilterBuilder',
     FilterBuilder,
     'FilterBuilder',
+  ],
+  [
+    '/filterquery/:skin',
+    'Filter data with FilterQuery',
+    FilterQuery,
+    'FilterQuery',
   ],
   [
     '/filtered-data/:skin',

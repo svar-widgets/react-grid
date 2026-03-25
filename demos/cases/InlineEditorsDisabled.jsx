@@ -68,7 +68,7 @@ const InlineEditorsDisabled = () => {
         <Grid
           data={data}
           columns={columns}
-          cellStyle={(row, column) => (isBlocked(row, column) ? 'blocked' : '')}
+          cellStyle={(row, column) => (isBlocked(row, column) ? 'wx-doorlydd blocked' : '')}
         />
       </div>
     </div>

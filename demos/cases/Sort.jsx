@@ -44,7 +44,7 @@ export default function Sort() {
   }
 
   return (
-    <div className="demo-container">
+    <div className="wx-dKpM2xRq demo-container">
       <div>
         <h4>Click on header cells to sort the data</h4>
         <Grid data={data} columns={columns} />

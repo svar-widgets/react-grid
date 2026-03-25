@@ -10,7 +10,9 @@
 
 </div>
 
-[SVAR React DataGrid](https://svar.dev/react/datagrid/) is a ready-to-use component that helps you integrate powerful, feature-rich and lightning-fast data tables into React apps. It efficiently handles large datasets and supports virtual scrolling, in-cell editing, sorting, filtering, TypeScript, and full customization to fit complex projects.
+[SVAR React DataGrid](https://svar.dev/react/datagrid/) is a ready-to-use component that helps you integrate feature-rich and lightning-fast data tables into React apps. It efficiently handles large datasets and supports virtual scrolling, in-cell editing, sorting, filtering, and full customization to fit complex projects.
+
+Built as a pure React component (no wrappers), it integrates naturally with modern React apps and includes full TypeScript support. The data grid supports responsive layouts, light and dark themes, and is compatible with React 18 and 19.
 
 <div align="center">
   <img src="https://svar.dev/images/github/github-grid.png" alt="SVAR React DataGrid - Examples" width="700">
@@ -18,61 +20,100 @@
 
 ### :sparkles: Key Features
 
--   High performance (virtual scrolling and dynamic loading)
--   In-cell editing with different cell editors (datepicker, combo, select, rich select, etc.)
--   Custom HTML for cells
--   Sorting by multiple columns
--   Filtering
+**Handling large datasets**
+-   Virtual scrolling (rows and columns)
+-   Dynamic data loading
 -   Paging
--   Accessibility: compatibility with [WAI-ARIA](https://www.w3.org/WAI/standards-guidelines/aria/) standard
+
+**Data editing**
+-   In-cell editing with different cell editors (datepicker, combo, select, rich select)
+-   External editor for grid data
+-   Custom in-cell editors
+-   Context menu and toolbar
+-   Undo/redo
+
+**Columns**
+-   Multi-column sorting
 -   Frozen columns
 -   Expandable/collapsible columns
+-   Hide/show columns
+-   Auto-sizing based on content
+
+**Rows**
 -   Row reordering with drag-and-drop
--   Customizable tooltips for grid cells
--   Context menu
--   External editor for grid data
--   Tree-like structure
--   Print support
+-   Tree data
+-   Auto-sizing to content
+
+**Cells**
+-   Custom HTML content
+-   Tooltips
+
+**Filtering**
+-   Built-in column filters
+-   External filter controls
+-   Advanced query builder (with [SVAR React Filter](https://github.com/svar-widgets/react-filter))
+-   Structured queries & natural language (with [SVAR React Filter](https://github.com/svar-widgets/react-filter))
+
+**Accessibility**
 -   Keyboard navigation
+-   [WAI-ARIA](https://www.w3.org/WAI/standards-guidelines/aria/) compliant
+
+**Data & export**
+-   Print support
+-   Export to CSV
 -   RestDataProvider for easy backend data binding
--   Dark and light skins
--   Easy customization with CSS
--   TypeScript support
--   React 18 and 19 compatibility
 
 ### :hammer_and_wrench: How to Use
 
-To start using **SVAR React DataGrid** component, simply import the package and include the desired component in your React file:
+Install SVAR React DataGrid via npm:
+
+```bash
+npm install @svar-ui/react-grid
+```
+
+Import the package and include the data grid component in your React file:
 
 ```jsx
 import { Grid } from "@svar-ui/react-grid";
-import "@svar-ui/react-grid/all.css";
-
-const columns = [
-    { id: 'id', width: 50 },
-    {
-      id: 'city',
-      width: 100,
-      header: 'City',
-      footer: 'City',
-    },
-    {
-      id: 'firstName',
-      header: 'First Name',
-      footer: 'First Name',
-      width: 150,
-    },
-];
+import "@svar-ui/react-grid/all.css"; // required styles
 
 const data = [
-    {
-        id: 1,
-        city: "London",
-        firstName: "Alex"
-    }
+  {
+    id: 1,
+    email: "Leora13@yahoo.com",
+    firstName: "Ernest",
+    lastName: "Schuppe",
+  },
+  {
+    id: 2,
+    email: "Mose_Gerhold51@yahoo.com",
+    firstName: "Janis",
+    lastName: "Vandervort",
+  },
 ];
 
-const myComponent => (<Grid columns={column} data={data} />);
+const columns = [
+  {
+    id: "id",
+    width: 50,
+  },
+  {
+    id: "firstName",
+    header: "First Name",
+    footer: "First Name",
+    width: 150,
+  },
+  {
+    id: "lastName",
+    header: "Last Name",
+    footer: "Last Name",
+    width: 150,
+  },
+];
+
+export default function App() {
+  return <Grid data={data} columns={columns} />;
+}
 ```
 
 See the [getting started guide](https://docs.svar.dev/react/grid/getting_started/) to quickly set up and begin using SVAR React DataGrid component in your React projects.
@@ -80,3 +121,7 @@ See the [getting started guide](https://docs.svar.dev/react/grid/getting_started
 ### :speech_balloon: Need Help?
 
 [Post an Issue](https://github.com/svar-widgets/react-grid/issues/) or use our [community forum](https://forum.svar.dev).
+
+### ⭐ Show Your Support
+
+If SVAR React DataGrid helps your project, give us a star [on GitHub](https://github.com/svar-widgets/react-grid/)! It helps more developers discover this component and keeps our team motivated to ship new features.

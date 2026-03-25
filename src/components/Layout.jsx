@@ -10,7 +10,7 @@ import storeContext from '../context';
 import { onresize } from '../helpers/actions/onresize';
 import { reorder as drag, getOffset } from '../helpers/actions/reorder';
 import { resetAutoScroll, tryAutoScroll } from '../helpers/actions/dragscroll';
-import { clickOutside, locateAttr, locate, id as toId } from '@svar-ui/lib-dom';
+import { clickOutside, locate, setID, locateID, getID } from '@svar-ui/lib-dom';
 import { hotkeys, defaultHotkeys } from '@svar-ui/grid-store';
 import { scrollTo } from '@svar-ui/grid-store';
 import { useStore, delegateClick, useStoreWithCounter } from '@svar-ui/lib-react';
@@ -457,13 +457,13 @@ function Layout(props) {
 
   const bodyClickHandlers = useRef({
     dblclick: (rowId, ev) => {
-      const data = { id: rowId, column: locateAttr(ev, 'data-col-id') };
+      const data = { id: rowId, column: locateID(ev, 'data-col-id') };
       api.exec('open-editor', data);
     },
     click: (rowId, ev) => {
       if (ev.target.closest("input")) return;
       if (postDragRef.current) return;
-      const column = locateAttr(ev, 'data-col-id');
+      const column = locateID(ev, 'data-col-id');
       if (focusCell?.id !== rowId)
         api.exec('focus-cell', {
           row: rowId,
@@ -473,7 +473,7 @@ function Layout(props) {
 
       if (selectState === false) return;
 
-      const toggle = multiselect && ev.ctrlKey;
+      const toggle = multiselect && (ev.ctrlKey || ev.metaKey);
       const range = multiselect && ev.shiftKey;
 
       if (
@@ -526,10 +526,10 @@ function Layout(props) {
 
     setDragItem(from);
 
-    if (api.getRow(from).open)
+    if (tree && api.getRow(from).open)
       api.exec('close-row', { id: from, nested: true });
 
-    const itemNode = locate(sourceNode, 'data-id');
+    const itemNode = locate(sourceNode);
     const cloned = itemNode.cloneNode(true);
     cloned.classList.remove('wx-selected');
     cloned
@@ -580,8 +580,8 @@ function Layout(props) {
     }
 
     if (tableNodeRef.current.contains(context.targetNode)) {
-      const targetRow = locate(context.targetNode, 'data-id');
-      const to = toId(targetRow?.getAttribute('data-id'));
+      const targetRow = locate(context.targetNode);
+      const to = targetRow && getID(targetRow);
 
       if (to && to !== from) {
         context.to = to;
@@ -699,9 +699,9 @@ function Layout(props) {
       if (
         !focus ||
         (visibleSelection.length && !visibleSelection.includes(focus.row)) ||
-        dataRows.findIndex((r) => r.id == focus.row) === -1 ||
+        dataRows.findIndex((r) => r.id === focus.row) === -1 ||
         renderColumns.data.findIndex(
-          (c) => c.id == focus.column && !c.collapsed,
+          (c) => c.id === focus.column && !c.collapsed,
         ) === -1
       ) {
         const row = visibleSelection[0] || dataRows[0].id;
@@ -774,7 +774,7 @@ function Layout(props) {
 
     const result = [];
     result.push(
-      clickOutside(node, () => api.exec('focus-cell', { eventSource: 'click' }))
+      clickOutside(node, () => focusCell && api.exec('focus-cell', { eventSource: 'click' }))
         .destroy,
     );
     result.push(delegateClick(node, bodyClickHandlers.current));
@@ -856,8 +856,8 @@ function Layout(props) {
                     <div
                       key={row.id}
                       className={'wx-4VuBwK2D ' + rowClass}
-                      data-id={row.id}
-                      data-context-id={row.id}
+                      data-id={setID(row.id)}
+                      data-context-id={setID(row.id)}
                       style={rowStyleProp}
                       role="row"
                       aria-rowindex={rIndex}
@@ -876,7 +876,7 @@ function Layout(props) {
                           );
                         } else if (
                           editorState?.id === row.id &&
-                          editorState.column == column.id
+                          editorState.column === column.id
                         ) {
                           return (
                             <Editor key={column.id} row={row} column={column} />
@@ -892,7 +892,7 @@ function Layout(props) {
                               reorder={reorder}
                               focusable={
                                 focus?.row === row.id &&
-                                focus?.column == column.id
+                                focus?.column === column.id
                               }
                             />
                           );

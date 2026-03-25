@@ -1,0 +1,24 @@
+.wx-option.wx-aacZ4gNU {
+  display: flex;
+  direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.wx-text.wx-aacZ4gNU {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wx-value.wx-aacZ4gNU {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  overflow: hidden;
+  outline: none;
+  border: 1px solid var(--wx-color-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

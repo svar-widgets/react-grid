@@ -19,7 +19,7 @@ export default function HeaderFooter(props) {
       {columns.map((row, i) => (
         <tr key={i}>
           {row.map((cell) => {
-            const column = _columns.find((c) => c.id == cell.id);
+            const column = _columns.find((c) => c.id === cell.id);
             const className =
               `wx-print-cell-${type}` +
               `${getColumnCss(column)}` +

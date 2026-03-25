@@ -5,7 +5,7 @@ import { getData } from '../data';
 
 const { clientData, clientColumns, treeData, treeFixedColumns } = getData();
 
-function ProExport() {
+function ExportCSV() {
   const api1 = useRef(null);
   const api2 = useRef(null);
 
@@ -57,4 +57,4 @@ function ProExport() {
   );
 }
 
-export default ProExport;
+export default ExportCSV;

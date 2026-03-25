@@ -23,6 +23,8 @@ export default [
         console: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
         requestAnimationFrame: 'readonly',
         ResizeObserver: 'readonly',
         getComputedStyle: 'readonly',

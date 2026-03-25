@@ -1,12 +1,18 @@
 import { useMemo } from 'react';
-import { Grid } from '../../src';
+import { Grid, registerInlineEditor } from '../../src';
 import { getData } from '../data';
 import SelectEditorCell from '../custom/SelectEditorCell.jsx';
 import EditorDateCell from '../custom/EditorDateCell.jsx';
 import EditorSelectCell from '../custom/EditorSelectCell.jsx';
+import EditorDestinationsCell from '../custom/EditorDestinationsCell.jsx';
+import DestinationCell from '../custom/DestinationCell.jsx';
+import ColorEditor from '../custom/ColorEditor.jsx';
+import ColorCell from '../custom/ColorCell.jsx';
 
 export default function InlineEditorsCells() {
   const { allData: data, countries, users } = useMemo(() => getData(), []);
+
+  registerInlineEditor('color', ColorEditor);
 
   const columns = useMemo(
     () => [
@@ -43,9 +49,55 @@ export default function InlineEditorsCells() {
         options: users,
         cell: SelectEditorCell,
       },
+      {
+        id: 'destinations',
+        header: 'Destinations - "multiselect"',
+        editor: {
+          type: 'multiselect',
+          config: { cell: EditorDestinationsCell },
+        },
+        options: countries,
+        width: 280,
+        cell: DestinationCell,
+      },
+      /*{
+        id: 'destinations-template',
+        header: 'Destinations - "multiselect" with template',
+        editor: {
+          type: 'multiselect',
+          config: {
+            template: (value) => {
+              if (Array.isArray(value)) {
+                return value.map(v => `${v.flag}`).join(' ');
+              }
+              return `${value.label} ${value.flag}`;
+            },
+          },
+        },
+        options: countries,
+        width: 300,
+        template: (value) => {
+          return value
+            .map(v => countries.find(c => c.id === v)?.flag)
+            .join(' ');
+        },
+      },*/
+      {
+        id: 'color',
+        header: 'Color - custom "color"',
+        editor: 'color',
+        width: 180,
+        cell: ColorCell,
+      },
     ],
     [countries, users],
   );
+
+  useMemo(() => {
+    data.forEach(row => {
+      row['destinations-template'] = [...row.destinations];
+    });
+  }, [data]);
 
   return (
     <div style={{ padding: '20px' }}>

@@ -37,6 +37,15 @@ function InlineEditors() {
         editor: 'richselect',
         options: users,
       },
+      {
+        id: 'destinations',
+        header: 'Destinations - "multiselect"',
+        editor: {
+          type: 'multiselect',
+        },
+        options: countries,
+        width: 250,
+      },
     ],
     [countries, users],
   );

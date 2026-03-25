@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { SuggestDropdown } from '@svar-ui/react-core';
+import { clickOutside } from '@svar-ui/lib-dom';
 import './Richselect.css';
 
 export default function Richselect(props) {
-  const { actions, editor } = props;
+  const { editor } = props;
   const onAction = props.onAction ?? props.onaction;
+  const onSave = props.onSave ?? props.onsave;
+  const onApply = props.onApply ?? props.onapply;
+  const onCancel = props.onCancel ?? props.oncancel;
 
   const config = editor.config || {};
 
@@ -20,8 +24,8 @@ export default function Richselect(props) {
   );
 
   function updateValue({ id }) {
-    actions.updateValue(id);
-    actions.save();
+    onApply(id);
+    onSave();
   }
 
   let navigate;
@@ -43,13 +47,19 @@ export default function Richselect(props) {
     }
   }, []);
 
+  useEffect(() => {
+    if (!node.current) return;
+    const cleanup = clickOutside(node.current, () => onSave(true));
+    return () => cleanup.destroy();
+  }, [onSave]);
+
   return (
     <>
       <div
         ref={node}
         className="wx-ywGRk611 wx-value"
         tabIndex={0}
-        onClick={() => actions.cancel()}
+        onClick={onCancel}
         onKeyDown={(ev) => {
           keydown(ev, index);
           ev.preventDefault();

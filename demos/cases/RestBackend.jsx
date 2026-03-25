@@ -36,7 +36,7 @@ function RestBackend() {
   const provider = useMemo(
     () =>
       new RestDataProvider(
-        'https://master--svar-grid-go--dev.webix.io/films',
+        'https://-backend.svar.devgrid/films',
         (obj) => {
           obj.year = obj.year * 1;
           obj.votes = obj.votes * 1;

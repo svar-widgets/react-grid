@@ -1,0 +1,19 @@
+.empty.wx-uHkWSzv3 {
+  color: var(--wx-color-font-disabled);
+}
+.custom-option.wx-uHkWSzv3 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 4px;
+}
+.info.wx-uHkWSzv3 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.code.wx-uHkWSzv3 {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--wx-color-font-disabled);
+}

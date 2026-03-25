@@ -1,4 +1,10 @@
-import type { FC, ComponentProps, ReactNode } from 'react';
+import type {
+  FC,
+  ComponentProps,
+  ReactNode,
+  ForwardRefExoticComponent,
+  RefAttributes,
+} from 'react';
 import { ContextMenu as BaseContextMenu } from '@svar-ui/react-menu';
 import { Toolbar as BaseToolbar } from '@svar-ui/react-toolbar';
 
@@ -10,6 +16,7 @@ import type {
   TMethodsConfig,
   IConfig,
   TEditorType,
+  TEditorConfig,
   IColumnEditor,
   IHeaderCell,
 } from '@svar-ui/grid-store';
@@ -61,7 +68,7 @@ export interface IColumnConfig
   footer?: TColumnHeaderConfig;
 }
 
-export declare const Grid: FC<
+export declare const Grid: ForwardRefExoticComponent<
   {
     rowStyle?: (row: any) => string;
     columnStyle?: (column: IColumn) => string;
@@ -86,7 +93,8 @@ export declare const Grid: FC<
       | false
       | { [key: string]: ((e?: KeyboardEvent) => void) | boolean };
   } & IConfig &
-    GridActions<TMethodsConfig>
+    GridActions<TMethodsConfig> &
+    RefAttributes<IApi>
 >;
 
 export declare const HeaderMenu: FC<{
@@ -127,6 +135,17 @@ export declare const WillowDark: FC<{
   fonts?: boolean;
   children?: ReactNode;
 }>;
+
+export declare function registerInlineEditor(
+  type: string,
+  component: FC<{
+    editor: TEditorConfig;
+    onsave?: (ignoreFocus: boolean) => void;
+    oncancel?: () => void;
+    onapply?: (value: any) => void;
+    onaction?: (ev: { action: string; data?: { [key: string]: any } }) => void;
+  }>,
+): void;
 
 /* get component events from store actions*/
 type RemoveHyphen<S extends string> = S extends `${infer Head}-${infer Tail}`

@@ -1,0 +1,9 @@
+.color_block.wx-LiqCCOWu {
+  height: 20px;
+  width: 20px;
+  border-radius: 3px;
+  border: var(--wx-table-cell-border);
+}
+.color_block.wx-LiqCCOWu span {
+  padding-left: 26px;
+}
