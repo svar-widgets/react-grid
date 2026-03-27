@@ -216,7 +216,7 @@ const Grid = forwardRef(function Grid(
       dynamic,
       tree,
       sortMarks: sortMarks || {},
-      filterValues,
+      filterValues: filterValues || {},
       undo,
       reorder,
       _skin,

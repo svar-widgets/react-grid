@@ -89,11 +89,11 @@ function Layout(props) {
         .filter((c) => !c.hidden)
         .map((a) => ({ ...a }));
       cols.forEach((a) => {
-        a.fixed = { left: 1 };
+        a.fixed = { left: 1, leftSize: split.left };
         a.left = width;
         width += a.width;
       });
-      if (cols.length) cols[cols.length - 1].fixed = { left: -1 };
+      if (cols.length) cols[cols.length - 1].fixed.left = -1;
     }
 
     return { columns: cols, width };

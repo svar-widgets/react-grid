@@ -4,7 +4,7 @@
   background-color: var(--wx-background);
   color: var(--wx-color-font);
   position: relative;
-  z-index: 3;
+  z-index: 2;
 }
 .wx-8l724t2g.wx-cell .wx-dropdown {
   border: var(--wx-table-editor-dropdown-border);

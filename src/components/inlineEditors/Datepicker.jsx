@@ -1,12 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Dropdown } from '@svar-ui/react-core';
 import { clickOutside } from '@svar-ui/lib-dom';
 import './Datepicker.css';
 
 export default function Datepicker({ editor, onAction, onSave, onApply, onCancel }) {
   const [value] = useState(() => editor.value || new Date());
-  const [template] = useState(() => editor.config?.template);
-  const [cell] = useState(() => editor.config?.cell);
+  const { template, cell, dropdown = {} } = editor?.config || {};
+  const dropdownOptions = useMemo(() => ({
+    trackScroll: true,
+    width: 'auto',
+    ...dropdown,
+  }), [dropdown]);
 
   function updateValue({ value }) {
     onApply(value);
@@ -51,7 +55,7 @@ export default function Datepicker({ editor, onAction, onSave, onApply, onCancel
           <span className="wx-lNWNYUb6 wx-text">{editor.renderedValue}</span>
         )}
       </div>
-      <Dropdown width={'auto'}>
+      <Dropdown {...dropdownOptions} onCancel={onCancel}>
         <div ref={setCalendarContainer} className="wx-lNWNYUb6">
           <Calendar
             value={value}

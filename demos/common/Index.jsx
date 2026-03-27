@@ -203,8 +203,9 @@ function DemoExplorerContent({
             data-wx-portal-root="true"
           >
             <Globals>
-              <SkinComponent/>
+              <SkinComponent>
               <Router skin={skin} onRouteChange={handleRouteChange} />
+               </SkinComponent>
             </Globals>
           </div>
         </div>

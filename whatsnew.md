@@ -1,3 +1,13 @@
+## 2.6.1
+
+### Fixes
+
+- Impossible to configure inline editor dropdown
+- Inline editor dropdown is detached during scroll
+- Editor state object is mutated instead of being reset
+- DataProvider adds trailing slash to getData url
+- Inline filters throw the error upon initialization
+
 ## 2.6.0
 
 ### New features

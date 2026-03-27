@@ -11,6 +11,12 @@ export default function Richselect(props) {
   const onCancel = props.onCancel ?? props.oncancel;
 
   const config = editor.config || {};
+  const { dropdown = {} } = config;
+
+  const dropdownOptions = useMemo(
+    () => ({ trackScroll: true, ...dropdown }),
+    [dropdown],
+  );
 
   const [data] = useState(
     editor.options.find((opt) => opt.id === editor.value),
@@ -76,7 +82,7 @@ export default function Richselect(props) {
           <span className="wx-ywGRk611 wx-text">{editor.renderedValue}</span>
         )}
       </div>
-      <SuggestDropdown items={options} onReady={ready} onSelect={updateValue}>
+      <SuggestDropdown items={options} onReady={ready} onSelect={updateValue} {...dropdownOptions} onCancel={onCancel}>
         {({ option }) =>
           config.template
             ? config.template(option)

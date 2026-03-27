@@ -3,12 +3,14 @@ import { SuggestDropdown } from '@svar-ui/react-core';
 import { clickOutside } from '@svar-ui/lib-dom';
 import './Combo.css';
 
-function Combo({ editor, onAction, onSave, onApply }) {
+function Combo({ editor, onAction, onSave, onApply, onCancel }) {
   const [value, setValue] = useState(editor?.value);
   const [text, setText] = useState(editor?.renderedValue);
   const [filterOptions, setFilterOptions] = useState(editor?.options || []);
   const template = useMemo(() => editor?.config?.template, [editor]);
   const cell = useMemo(() => editor?.config?.cell, [editor]);
+  const dropdown = useMemo(() => editor?.config?.dropdown || {}, [editor]);
+  const dropdownOptions = useMemo(() => ({ trackScroll: true, ...dropdown }), [dropdown]);
 
   const index = useMemo(() => {
     return (filterOptions || []).findIndex((a) => a.id === value);
@@ -91,6 +93,8 @@ function Combo({ editor, onAction, onSave, onApply }) {
         items={filterOptions}
         onReady={ready}
         onSelect={updateValue}
+        {...dropdownOptions}
+        onCancel={onCancel}
       >
         {({ option }) => {
           if (template) {

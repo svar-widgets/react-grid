@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { SuggestDropdown } from '@svar-ui/react-core';
 import { clickOutside } from '@svar-ui/lib-dom';
 import './MultiSelect.css';
@@ -8,9 +8,14 @@ export default function MultiSelect(props) {
 
   const config = editor?.config || {};
 
-  const [options] = useState(editor?.options ?? []);
-  const [value, setValue] = useState(editor?.value || []);
-  const [renderedValue, setRenderedValue] = useState(editor?.renderedValue);
+  const dropdownOptions = useMemo(() => {
+    const dropdown = config?.dropdown || {};
+    return { trackScroll: true, ...dropdown };
+  }, [config]);
+
+  const options = editor?.options ?? [];
+  const value = editor?.value || [];
+  const renderedValue = editor?.renderedValue;
 
   const firstSelected = options.find(opt => value.includes(opt.id));
   const index = firstSelected ? options.indexOf(firstSelected) : -1;
@@ -18,11 +23,6 @@ export default function MultiSelect(props) {
   const node = useRef(null);
 
   function updateValue({ id }) {
-    //[FIXME] temp change until editor mutation is fixed in store
-    setValue(id);
-    setRenderedValue(
-      id.map(v => options.find(opt => opt.id === v)?.label).join(','),
-    );
     onApply(id);
     if (node.current) node.current.focus();
   }
@@ -83,6 +83,8 @@ export default function MultiSelect(props) {
         onSelect={updateValue}
         checkboxes={true}
         multiselect={true}
+        {...dropdownOptions}
+        onCancel={onCancel}
         value={value}
       >
         {({ option }) => (

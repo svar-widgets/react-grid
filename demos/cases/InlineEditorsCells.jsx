@@ -54,10 +54,13 @@ export default function InlineEditorsCells() {
         header: 'Destinations - "multiselect"',
         editor: {
           type: 'multiselect',
-          config: { cell: EditorDestinationsCell },
+          config: {
+            cell: EditorDestinationsCell,
+            dropdown: { width: 'auto' },
+          },
         },
         options: countries,
-        width: 280,
+        width: 130,
         cell: DestinationCell,
       },
       /*{
@@ -102,7 +105,7 @@ export default function InlineEditorsCells() {
   return (
     <div style={{ padding: '20px' }}>
       <h4>Editable cells: inline editors with custom cells</h4>
-      <div>
+      <div style={{ height: '500px' }}>
         <Grid data={data} columns={columns} />
       </div>
     </div>
