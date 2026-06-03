@@ -1,3 +1,27 @@
+## 2.7.0
+
+### New features
+
+- Multi-select filter for Grid columns
+- Scroll-to action to force and listen to scroll movements
+
+### Updates
+
+- Extra Tooltip settings: arrow, delay, at, overlow, etc
+- Ability to set input type for "text" editor
+
+### Fixes
+
+- Closing an inline editor by clicking on another cell doesn't focus the cell clicked
+- Incorrect type for header cells
+- Columns flicker when a new row is added in a Grid with flexgrow
+- Incorrect type for `filterValues`
+- Multiselect editor value is not applied
+
+### Breaking changes
+
+- Parameters of Tooltip content component changed from `{ row, column }` to `{ data: row, column } `
+
 ## 2.6.1
 
 ### Fixes

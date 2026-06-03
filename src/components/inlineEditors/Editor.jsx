@@ -13,11 +13,9 @@ export default function Editor({ column, row }) {
     (ignore, cell) => {
       api.exec('close-editor', { ignore });
       if (cell) {
-        setTimeout(() => {
-          api.exec('focus-cell', {
-            ...cell,
-            eventSource: 'click',
-          });
+        api.exec('focus-cell', {
+          ...cell,
+          eventSource: 'click',
         });
       }
     },

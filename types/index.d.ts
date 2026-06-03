@@ -7,6 +7,7 @@ import type {
 } from 'react';
 import { ContextMenu as BaseContextMenu } from '@svar-ui/react-menu';
 import { Toolbar as BaseToolbar } from '@svar-ui/react-toolbar';
+import { Tooltip as BaseTooltip } from '@svar-ui/react-core';
 
 import type {
   IColumn,
@@ -37,19 +38,28 @@ export type TEditorHandlerConfig = (
   column?: IColumn,
 ) => TEditorType | IColumnEditorConfig | null;
 
+export type IInnerApi = Pick<
+  IApi,
+  'exec' | 'getState' | 'getReactiveState' | 'getRow'
+>;
+
 export interface ICellProps {
-  api: IApi;
+  api: IInnerApi;
   row: IRow;
   column: IColumn;
   onaction: (ev: { action?: any; data?: { [key: string]: any } }) => void;
 }
 
+export interface IHeaderCellProps {
+  api: IInnerApi;
+  row: number;
+  column: IColumn;
+  cell: Omit<IHeaderCell, 'cell'>;
+  onaction: (ev: { action?: any; data?: { [key: string]: any } }) => void;
+}
+
 export interface IHeaderCellConfig extends IHeaderCell {
-  cell?: FC<
-    ICellProps & {
-      cell: Omit<IHeaderCell, 'cell'>;
-    }
-  >;
+  cell?: FC<IHeaderCellProps>;
 }
 
 export type TColumnHeaderConfig =
@@ -115,11 +125,17 @@ export declare const Toolbar: FC<
   }
 >;
 
-export declare const Tooltip: FC<{
-  content?: FC;
-  api?: IApi;
-  children?: ReactNode;
-}>;
+export declare const Tooltip: FC<
+  Omit<ComponentProps<typeof BaseTooltip>, 'content'> & {
+    content?: FC<{
+      data: {
+        row: IRow;
+        column: IColumn;
+      };
+    }>;
+    api?: IApi;
+  }
+>;
 
 export declare const Material: FC<{
   fonts?: boolean;

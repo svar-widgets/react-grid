@@ -1,0 +1,34 @@
+.container.wx-aacJZmsW {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 12px;
+}
+
+.avatar.wx-aacJZmsW {
+  width: 70px;
+}
+
+.name.wx-aacJZmsW {
+  flex: 1;
+}
+
+.mail.wx-aacJZmsW {
+  flex: 1;
+}
+
+.user-avatar.wx-aacJZmsW {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #dfe2e6;
+  text-align: center;
+}
+
+.user-photo.wx-aacJZmsW {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #dfe2e6;
+}

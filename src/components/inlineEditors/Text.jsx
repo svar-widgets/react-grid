@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { clickOutside } from '@svar-ui/lib-dom';
 import './Text.css';
 
@@ -6,6 +6,7 @@ function Text(props) {
   const { editor, onSave, onApply } = props;
 
   const [value, setValue] = useState(editor?.value || '');
+  const { type = 'text' } = useMemo(() => editor?.config || {}, [editor]);
 
   const node = useRef(null);
   useEffect(() => {
@@ -34,7 +35,7 @@ function Text(props) {
       onInput={updateValue}
       onKeyDown={closeAndSave}
       ref={node}
-      type="text"
+      type={type}
       value={value}
     />
   );

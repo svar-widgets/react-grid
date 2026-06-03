@@ -1,34 +1,6 @@
 .container.wx-utjM0Tbo {
+  width: 100%;
   display: flex;
   align-items: center;
-  height: 56px;
-  padding: 0 12px;
-}
-
-.avatar.wx-utjM0Tbo {
-  width: 70px;
-}
-
-.name.wx-utjM0Tbo {
-  flex: 1;
-}
-
-.mail.wx-utjM0Tbo {
-  flex: 1;
-}
-
-.user-avatar.wx-utjM0Tbo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #dfe2e6;
-  text-align: center;
-}
-
-.user-photo.wx-utjM0Tbo {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: #dfe2e6;
+  gap: 4px;
 }

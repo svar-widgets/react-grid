@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useContext, useCallback } from 'react';
 import storeContext from '../context';
 import { useStore } from '@svar-ui/lib-react';
-import { useWritableProp } from '@svar-ui/lib-react';
 import { getStyle } from '../helpers/columnWidth';
 import { getRenderValue } from '@svar-ui/grid-store';
 import { setID } from '@svar-ui/lib-dom';
@@ -14,9 +13,8 @@ export default function Cell(props) {
     cellStyle = null,
     columnStyle = null,
     children,
+    focusable,
   } = props;
-
-  const [focusable, setFocusable] = useWritableProp(props.focusable);
 
   const api = useContext(storeContext);
   const focusCell = useStore(api, 'focusCell');
@@ -73,23 +71,14 @@ export default function Cell(props) {
   }, [focusCell, focusable, row.id, column.id]);
 
   const toggleFocusAction = useCallback(() => {
-    if (focusable) {
+    if (focusable && !focusCell) {
       api.exec('focus-cell', {
         row: row.id,
         column: column.id,
         eventSource: 'focus',
       });
     }
-  }, [api, focusable, row.id, column.id]);
-
-  useEffect(() => {
-    return () => {
-      if (focusable && focusCell) {
-        api.exec('focus-cell', { eventSource: 'destroy' });
-        setFocusable(false);
-      }
-    };
-  }, [api, setFocusable]);
+  }, [api, focusable, focusCell, row.id, column.id]);
 
   function highlightText(text) {
     const regex = new RegExp(`(${search.value.trim()})`, 'gi');

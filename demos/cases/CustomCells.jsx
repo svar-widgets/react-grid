@@ -4,7 +4,7 @@ import { Grid } from '../../src';
 import { getData } from '../data';
 
 import CheckboxCell from '../custom/CheckboxCell.jsx';
-import AvatarCell from '../custom/AvatarCell.jsx';
+import UserCell from '../custom/UserCell.jsx';
 import HeaderTextCell from '../custom/HeaderTextCell.jsx';
 import FooterTextCell from '../custom/FooterTextCell.jsx';
 
@@ -33,7 +33,7 @@ export default function CustomCells() {
         cell: CheckboxCell,
         width: 36,
       },
-      { id: 'avatar', cell: AvatarCell, width: 350 },
+      { id: 'avatar', cell: UserCell, width: 350 },
     ],
     [],
   );

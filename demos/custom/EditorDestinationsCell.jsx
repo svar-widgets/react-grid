@@ -8,7 +8,7 @@ function EditorDestinationsCell(props) {
 
   if (Array.isArray(data)) {
     return (
-      <div className="wx-uHkWSzv3">
+      <div className="list wx-uHkWSzv3">
         <span className="wx-uHkWSzv3">
           {countriesCount && countriesCount <= 3 ? (
             data.map(item => item.label).join(', ')

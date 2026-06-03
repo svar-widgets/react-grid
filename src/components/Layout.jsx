@@ -51,6 +51,8 @@ function Layout(props) {
   const [selectedRows, selectionChanged] = useStoreWithCounter(api, 'selectedRows');
   const selectState = useStore(api, 'select');
   const editorState = useStore(api, 'editor');
+  const scrollLeft = useStore(api, 'scrollLeft');
+  const scrollTop = useStore(api, 'scrollTop');
   const tree = useStore(api, 'tree');
   const focusCell = useStore(api, 'focusCell');
   const printConfig = useStore(api, '_print');
@@ -64,8 +66,7 @@ function Layout(props) {
     setSCROLLSIZE(getScrollSize());
   }, []);
 
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [scrollTop, setScrollTop] = useState(0);
+  const [bodyClientHeight, setBodyClientHeight] = useState(0);
 
   const hasAny = useMemo(() => {
     return (columns || []).some((col) => !col.hidden && col.flexgrow);
@@ -170,8 +171,8 @@ function Layout(props) {
   const renderColumns = useMemo(() => {
     let dataCols, headerCols, footerCols;
 
-    const left = scrollLeft;
-    const right = scrollLeft + (clientWidth || 0);
+    const left = scrollLeft || 0;
+    const right = (scrollLeft || 0) + (clientWidth || 0);
 
     let start = 0;
     let end = 0;
@@ -267,6 +268,8 @@ function Layout(props) {
     return clientWidth && clientHeight ? fullWidth >= clientWidth : false;
   }, [clientWidth, clientHeight, fullWidth]);
 
+  const [hasVScroll, setHasVScroll] = useState(false);
+
   const visibleRowsHeight = useMemo(() => {
     return (
       (clientHeight || 0) -
@@ -289,14 +292,15 @@ function Layout(props) {
     let deltaTop = 0;
     const EXTRAROWS = 2;
 
+    const st0 = scrollTop || 0;
     if (autoRowHeight) {
-      let st = scrollTop;
+      let st = st0;
       while (st > 0) {
         st -= rowHeightsRef.current[start] || defaultRowHeight;
         start++;
       }
 
-      deltaTop = scrollTop - st;
+      deltaTop = st0 - st;
       for (let i = Math.max(0, start - EXTRAROWS - 1); i < start; i++)
         deltaTop -= rowHeightsRef.current[start - i] || defaultRowHeight;
 
@@ -307,7 +311,7 @@ function Layout(props) {
         let topHeight = 0;
         for (let i = 0; i < (data || []).length; i++) {
           const height = data[i].rowHeight || defaultRowHeight;
-          if (topHeight + height > scrollTop) {
+          if (topHeight + height > st0) {
             startInd = i;
             break;
           }
@@ -338,7 +342,7 @@ function Layout(props) {
         return { d: deltaTop, start, end };
       }
 
-      start = Math.floor(scrollTop / (defaultRowHeight || 1));
+      start = Math.floor(st0 / (defaultRowHeight || 1));
       start = Math.max(0, start - EXTRAROWS);
       deltaTop = start * (defaultRowHeight || 0);
     }
@@ -379,12 +383,9 @@ function Layout(props) {
     renderEnd,
   ]);
 
-  const hasVScroll = useMemo(() => {
-    return clientWidth && clientHeight
-      ? fullHeight + headerHeight + footerHeight >=
-      clientHeight - (fullWidth >= (clientWidth || 0) ? SCROLLSIZE : 0)
-      : false;
-  }, [
+  // refs for setVScroll to read latest values without re-creating the function
+  const vScrollDepsRef = useRef({});
+  vScrollDepsRef.current = {
     clientWidth,
     clientHeight,
     fullHeight,
@@ -392,7 +393,27 @@ function Layout(props) {
     footerHeight,
     fullWidth,
     SCROLLSIZE,
-  ]);
+  };
+  const setVScroll = useCallback(() => {
+    const v = vScrollDepsRef.current;
+    setHasVScroll(
+      v.clientWidth && v.clientHeight
+        ? v.fullHeight + v.headerHeight + v.footerHeight >=
+            v.clientHeight - (v.fullWidth >= v.clientWidth ? v.SCROLLSIZE : 0)
+        : false,
+    );
+  }, []);
+
+  // recompute hasVScroll when body client height changes, via rAF
+  useEffect(() => {
+    const raf = requestAnimationFrame(setVScroll);
+    return () => window.cancelAnimationFrame(raf);
+  }, [bodyClientHeight, setVScroll]);
+
+  // recompute hasVScroll on clientHeight change
+  useEffect(() => {
+    setVScroll();
+  }, [clientHeight, setVScroll]);
 
   const contentWidth = useMemo(() => {
     return hasAny && fullWidth <= (clientWidth || 0)
@@ -436,10 +457,15 @@ function Layout(props) {
 
   const renderStart = useMemo(() => renderRows.start, [renderRows.start]);
 
+  const scrollPosRef = useRef({ top: scrollTop, left: scrollLeft });
+  scrollPosRef.current = { top: scrollTop, left: scrollLeft };
   const onScroll = useCallback((ev) => {
-    setScrollTop(ev.target.scrollTop);
-    setScrollLeft(ev.target.scrollLeft);
-  }, []);
+    const top = ev.target.scrollTop;
+    const left = ev.target.scrollLeft;
+    const cur = scrollPosRef.current;
+    if (top !== cur.top || left !== cur.left)
+      api.exec('scroll-to', { top, left });
+  }, [api]);
 
   const lockSelection = useCallback((ev) => {
     if (ev.shiftKey) ev.preventDefault();
@@ -538,7 +564,7 @@ function Layout(props) {
     container.appendChild(cloned);
     setDragNode(cloned);
 
-    const offsetX = scrollLeft - renderColumns.d;
+    const offsetX = (scrollLeft || 0) - renderColumns.d;
     const vScrollSize = hasVScroll ? SCROLLSIZE : 0;
 
     container.style.width =
@@ -590,7 +616,7 @@ function Layout(props) {
           ? dragNode?.offsetHeight
           : sizes?.rowHeight;
 
-        if (dragNode && (scrollTop === 0 || pos.y > min + rowHeight - 1)) {
+        if (dragNode && ((scrollTop || 0) === 0 || pos.y > min + rowHeight - 1)) {
           const targetRect = targetRow.getBoundingClientRect();
           const dragNodeOffset = getOffset(dragNode);
 
@@ -599,7 +625,11 @@ function Layout(props) {
 
           const dir = dragNodePos > targetNodePos ? -1 : 1;
           const initialMode = dir === 1 ? 'after' : 'before';
-          const diff = Math.abs(api.getRowIndex(from) - api.getRowIndex(to));
+          const flat = api.getState().flatData;
+          const diff = Math.abs(
+            flat.findIndex((r) => r.id === from) -
+              flat.findIndex((r) => r.id === to),
+          );
 
           const mode =
             diff !== 1
@@ -756,6 +786,8 @@ function Layout(props) {
 
   const scrollConfig = useRef({
     scroll: api.getReactiveState().scroll,
+    scrollLeft: api.getReactiveState().scrollLeft,
+    scrollTop: api.getReactiveState().scrollTop,
   });
   scrollConfig.current.getWidth = () =>
     (clientWidth || 0) - (hasVScroll ? SCROLLSIZE : 0);
@@ -779,10 +811,32 @@ function Layout(props) {
     );
     result.push(delegateClick(node, bodyClickHandlers.current));
 
+    setBodyClientHeight(node.clientHeight);
+    const ro = new ResizeObserver(() => {
+      setBodyClientHeight(node.clientHeight);
+    });
+    ro.observe(node);
+    result.push(() => ro.disconnect());
+
     return () => result.forEach((r) => r());
   }, []);
 
   const gridClassName = `wx-grid ${responsiveLevel ? `wx-responsive-${responsiveLevel}` : ''}`;
+
+
+  useEffect(() => {
+    if (focusCell) {
+      const rowExists = dataRows.some((row) => row.id === focusCell.row);
+      const cellExists =
+        rowExists &&
+        renderColumns.data.some(
+          (col) => col.id === focusCell.column && !col.collapsed,
+        );
+      if (!cellExists) {
+        api.exec('focus-cell', { eventSource: 'destroy' });
+      }
+    }
+  }, [focusCell, dataRows, renderColumns.data, api]);
 
   return (
     <>

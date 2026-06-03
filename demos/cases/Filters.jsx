@@ -49,6 +49,13 @@ export default function Filters() {
         options: countries,
       },
       {
+        id: 'destinations',
+        header: { filter: { type: 'multiselect' } },
+        footer: 'Destinations',
+        options: countries,
+        width: 200,
+      },
+      {
         id: 'date',
         header: { filter: 'datepicker' },
         template: (obj) => dateFormat.format(obj),

@@ -42,8 +42,20 @@ function InlineEditors() {
         header: 'Destinations - "multiselect"',
         editor: {
           type: 'multiselect',
+          config: { clear: true },
         },
         options: countries,
+        width: 250,
+      },
+      {
+        id: 'stars',
+        header: 'Stars - "text" (number)',
+        editor: {
+          type: 'text',
+          config: {
+            type: 'number',
+          },
+        },
         width: 250,
       },
     ],

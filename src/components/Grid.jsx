@@ -98,7 +98,6 @@ const Grid = forwardRef(function Grid(
       on: firstInRoute.on.bind(firstInRoute),
       detach: firstInRoute.detach.bind(firstInRoute),
       getRow: dataStore.getRow.bind(dataStore),
-      getRowIndex: dataStore.getRowIndex.bind(dataStore),
       getColumn: dataStore.getColumn.bind(dataStore),
     }),
     [dataStore, firstInRoute],

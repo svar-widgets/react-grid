@@ -40,6 +40,10 @@ function DemoExplorerContent({
   }, []);
 
   useEffect(() => {
+    document.body.className = `wx-${skin}-theme`;
+  }, [skin]);
+
+  useEffect(() => {
     if (isMobileView && title) {
       setShow(false);
     }
@@ -80,7 +84,7 @@ function DemoExplorerContent({
 
   return (
     <div
-      className={`wx-demos wx-willow-theme layout ${show ? 'active' : ''}${isMobileView ? ' narrow' : ''}`}
+      className={`wx-demos layout ${show ? 'active' : ''}${isMobileView ? ' narrow' : ''}`}
     >
       <div
         className={`wx-demos sidebar ${show ? 'active' : ''}`}
