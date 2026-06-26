@@ -1,71 +1,51 @@
 import { useContext, useState, useCallback } from 'react';
 import { context } from '@svar-ui/react-core';
 import { getData } from '../data';
-import { Grid } from '../../src/';
-import { ContextMenu } from '@svar-ui/react-menu';
+import { Grid, ContextMenu, defaultMenuOptions } from '../../src/';
 
 export default function CustomContextMenu() {
   const { data, flexibleColumns: columns } = getData();
 
+  // take the grid's default option set and alter it:
+  // drop copy/cut/paste, then append our own options
   const options = [
-    {
-      id: 'add',
-      text: 'Add before',
-      icon: 'wxi-table-row-plus-before',
-    },
-    { id: 'duplicate', text: 'Duplicate', icon: 'wxi-duplicate' },
-    { id: 'delete', text: 'Delete', icon: 'wxi-delete-outline' },
+    ...defaultMenuOptions.filter(
+      (op) => !['copy-row', 'cut-row', 'paste-row'].includes(op.id),
+    ),
     { comp: 'separator' },
-    { id: 'info', text: 'Info', icon: 'wxi-alert' },
-    { id: 'view', text: 'View', icon: 'wxi-external' },
+    { id: 'info', text: 'Row info', icon: 'wxi-alert' },
+    { id: 'view', text: 'View details', icon: 'wxi-external' },
   ];
 
   const helpers = useContext(context.helpers);
 
-  const [table, setTable] = useState(null);
-  const bindTable = useCallback((node) => {
-    if (node) setTable(node);
+  const [grid, setGrid] = useState(null);
+  const bindGrid = useCallback((node) => {
+    if (node) setGrid(node);
   }, []);
 
+  // built-in options (add/delete/move...) are executed by the grid itself;
+  // here we only react to the custom options we added above
   const handleClicks = (ev) => {
     const option = ev.action;
-    if (option) {
-      const id = table.getState().selectedRows[0];
-      switch (option.id) {
-        case 'add':
-          table.exec('add-row', { row: {}, before: id });
-          break;
-        case 'duplicate':
-          table.exec('add-row', {
-            row: { ...table.getRow(id), id: null },
-            after: id,
-          });
-          break;
-        case 'delete':
-          table.exec('delete-row', { id });
-          break;
-        default:
-          helpers.showNotice({ text: `You clicked ${option.text}` });
-      }
+    if (!option) return;
+
+    if (option.id === 'info' || option.id === 'view') {
+      const id = grid.getState().selectedRows[0];
+      const row = id ? grid.getRow(id) : null;
+      helpers.showNotice({
+        text: row
+          ? `${option.text} — ${row.firstName} ${row.lastName}`
+          : `${option.text} clicked`,
+      });
     }
   };
 
-  function getItem(id) {
-    if (id) table.exec('select-row', { id });
-    return id;
-  }
-
   return (
     <div style={{ padding: '20px' }}>
-      <h4>Context menu with custom actions</h4>
-      <ContextMenu
-        options={options}
-        onClick={handleClicks}
-        at="point"
-        resolver={getItem}
-        api={table}
-      >
-        <Grid data={data} columns={columns} ref={bindTable} />
+      <h4>Context menu with customized options</h4>
+      <ContextMenu api={grid} options={options} onClick={handleClicks}>
+        <Grid data={data} columns={columns} ref={bindGrid} multiselect reorder />
       </ContextMenu>
     </div>
   );

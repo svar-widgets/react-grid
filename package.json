@@ -1,6 +1,6 @@
 {
   "name": "@svar-ui/react-grid",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "Fast, feature-rich React DataGrid with virtual scrolling, cell editing, sorting, filtering, and accessibility support.",
   "productTag": "grid",
   "type": "module",

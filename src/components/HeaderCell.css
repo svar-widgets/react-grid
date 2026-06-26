@@ -90,7 +90,7 @@
   background-color: transparent;
   opacity: 0;
   cursor: ew-resize;
-  z-index: 8;
+  z-index: 5;
 }
 .wx-grip.wx-RsQD74qC div {
   margin-left: 5px;
@@ -132,7 +132,7 @@
   left: 9px;
 }
 
-.wx-cell.wx-RsQD74qC:has(.wx-grip.wx-RsQD74qC:hover) {
+.wx-cell.wx-RsQD74qC:has(.wx-grip.wx-RsQD74qC:hover:not(:active)) {
   z-index: 9;
 }
 

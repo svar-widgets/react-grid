@@ -214,7 +214,8 @@ function Layout(props) {
     const df = footerPos.delta;
     const csF = footerPos.index;
 
-    if (hasAny && fullWidth > (clientWidth || 0)) {
+    const renderAll = hasAny && fullWidth > (clientWidth || 0);
+    if (renderAll) {
       dataCols =
         headerCols =
         footerCols =
@@ -241,9 +242,7 @@ function Layout(props) {
       data: dataCols || [],
       header: headerCols || [],
       footer: footerCols || [],
-      d,
-      df,
-      dh,
+      ...(renderAll ? { d: 0, df: 0, dh: 0 } : { d, df, dh }),
     };
   }, [
     centerColumns,
@@ -260,8 +259,8 @@ function Layout(props) {
     [header, sizes],
   );
   const footerHeight = useMemo(
-    () => (footer ? sizes?.footerHeight || 0 : 0),
-    [footer, sizes],
+    () => (footer && (data || []).length ? sizes?.footerHeight || 0 : 0),
+    [footer, data, sizes],
   );
 
   const hasHScroll = useMemo(() => {
@@ -278,6 +277,12 @@ function Layout(props) {
       (hasHScroll ? SCROLLSIZE : 0)
     );
   }, [clientHeight, headerHeight, footerHeight, hasHScroll, SCROLLSIZE]);
+
+  const bodyContentHeight = useMemo(() => {
+    return footerHeight
+      ? Math.min(bodyClientHeight + 1, visibleRowsHeight - +footer)
+      : visibleRowsHeight;
+  }, [footerHeight, bodyClientHeight, visibleRowsHeight, footer]);
 
   const visibleRows = useMemo(() => {
     return Math.ceil((visibleRowsHeight || 0) / (defaultRowHeight || 1)) + 1;
@@ -481,6 +486,11 @@ function Layout(props) {
   const postDragRef = useRef(null);
   const movementYRef = useRef(null);
 
+  const selectedRowsRef = useRef(selectedRows);
+  useEffect(() => {
+    selectedRowsRef.current = selectedRows;
+  }, [selectedRows]);
+  
   const bodyClickHandlers = useRef({
     dblclick: (rowId, ev) => {
       const data = { id: rowId, column: locateID(ev, 'data-col-id') };
@@ -504,8 +514,8 @@ function Layout(props) {
 
       if (
         toggle ||
-        selectedRows.length > 1 ||
-        !selectedRows.includes(rowId)
+        selectedRowsRef.current.length > 1 ||
+        !selectedRowsRef.current.includes(rowId)
       ) {
         api.exec('select-row', { id: rowId, toggle, range });
       }
@@ -689,9 +699,18 @@ function Layout(props) {
     return width;
   }
 
+  // with at least one flexible column, size the box to 100% to match the container
   const styleWidth = useMemo(() => {
+    if (hasAny && fullWidth <= (clientWidth || 0)) return { width: '100%' };
     return globalWidth > 0 ? { width: `${globalWidth}px` } : undefined;
-  }, [globalWidth]);
+  }, [hasAny, fullWidth, clientWidth, globalWidth]);
+
+  const viewportWidth = useMemo(
+    () =>
+      (globalWidth > 0 ? globalWidth : clientWidth || 0) -
+      (hasVScroll ? SCROLLSIZE : 0),
+    [globalWidth, clientWidth, hasVScroll, SCROLLSIZE],
+  );
 
   const dataElRef = useRef(null);
   function adjustHeight() {
@@ -824,6 +843,7 @@ function Layout(props) {
   const gridClassName = `wx-grid ${responsiveLevel ? `wx-responsive-${responsiveLevel}` : ''}`;
 
 
+  // defer focus destroy until renderColumns and dataRows update (not on focusCell change)
   useEffect(() => {
     if (focusCell) {
       const rowExists = dataRows.some((row) => row.id === focusCell.row);
@@ -836,7 +856,7 @@ function Layout(props) {
         api.exec('focus-cell', { eventSource: 'destroy' });
       }
     }
-  }, [focusCell, dataRows, renderColumns.data, api]);
+  }, [renderColumns, dataRows]);
 
   return (
     <>
@@ -872,10 +892,13 @@ function Layout(props) {
               <div className="wx-4VuBwK2D wx-header-wrapper">
                 <HeaderFooter
                   contentWidth={contentWidth}
+                  viewportWidth={viewportWidth}
                   deltaLeft={renderColumns.dh}
                   columns={renderColumns.header}
                   columnStyle={columnStyle}
-                  bodyHeight={visibleRowsHeight - +footer}
+                  bodyHeight={bodyContentHeight}
+                  leftColumnsWidth={leftColumns.width}
+                  rightColumnsWidth={rightColumns.width}
                 />
               </div>
             ) : null}

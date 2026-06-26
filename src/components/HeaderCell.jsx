@@ -17,10 +17,15 @@ export default function HeaderCell(props) {
     columnStyle,
     bodyHeight,
     hasSplit,
+    deltaLeft,
+    leftColumnsWidth,
+    rightColumnsWidth,
+    viewportWidth,
   } = props;
 
   const api = useContext(storeContext);
   const sortMarksValue = useStore(api, 'sortMarks');
+  const scrollLeftValue = useStore(api, 'scrollLeft');
 
   const sortMark = useMemo(() => {
     return sortMarksValue ? sortMarksValue[column.id] : undefined;
@@ -86,28 +91,84 @@ export default function HeaderCell(props) {
   );
 
   const isCollapsed = useMemo(
-    () => cell.collapsed && column.collapsed,
-    [cell.collapsed, column.collapsed],
+    () => cell.collapsed && column?.collapsed,
+    [cell.collapsed, column?.collapsed],
   );
-  const overlay = useMemo(
-    () => isCollapsed && !hasSplit && cell.collapsible !== 'header',
-    [isCollapsed, hasSplit, cell.collapsible],
+  const isCenterColumn = useMemo(
+    () => hasSplit && (column?.fixed === 0 || !column?.fixed),
+    [hasSplit, column?.fixed],
   );
+
+  const centerBounds = useMemo(() => {
+    if (!hasSplit || !isCenterColumn) return { visible: false, clip: {} };
+
+    const width = cell.width || column.width;
+    const x = deltaLeft + cell.left - scrollLeftValue;
+    const centerRight = viewportWidth - rightColumnsWidth;
+
+    if (x + width <= leftColumnsWidth || x >= centerRight) {
+      return { visible: false, clip: {} };
+    }
+
+    const hiddenLeft = Math.max(0, leftColumnsWidth - x);
+    const hiddenRight = Math.max(0, x + width - centerRight);
+
+    return {
+      visible: true,
+      clip:
+        hiddenLeft || hiddenRight
+          ? { clipPath: `inset(0px ${hiddenRight}px 0px ${hiddenLeft}px)` }
+          : {},
+    };
+  }, [
+    hasSplit,
+    isCenterColumn,
+    cell.width,
+    column.width,
+    cell.left,
+    deltaLeft,
+    scrollLeftValue,
+    viewportWidth,
+    rightColumnsWidth,
+    leftColumnsWidth,
+  ]);
+
+  // 1) no split: all collapsed columns render with content
+  // 2) split + fixed: fixed columns render with content
+  // 3) split + center: only when visible in center area (clip if partially hidden)
+  const showCollapsedContent = useMemo(
+    () => !hasSplit || !isCenterColumn || centerBounds.visible,
+    [hasSplit, isCenterColumn, centerBounds.visible],
+  );
+
+  const collapsedClip = useMemo(
+    () =>
+      hasSplit && isCenterColumn && centerBounds.visible
+        ? centerBounds.clip
+        : {},
+    [hasSplit, isCenterColumn, centerBounds],
+  );
+
   const collapsedTextStyle = useMemo(
-    () => (overlay ? { top: -bodyHeight / 2, position: 'absolute' } : {}),
-    [overlay, bodyHeight],
+    () =>
+      showCollapsedContent
+        ? { top: -bodyHeight / 2, position: 'absolute' }
+        : {},
+    [showCollapsedContent, bodyHeight],
   );
 
   const cellStyle = useMemo(
-    () =>
-      getStyle(
+    () => ({
+      ...getStyle(
         cell.width,
         cell.flexgrow,
         column.fixed,
         column.left,
         cell.right ?? column.right,
-        cell.height + (isCollapsed && overlay ? bodyHeight : 0),
+        cell.height + (isCollapsed && showCollapsedContent ? bodyHeight : 0),
       ),
+      ...collapsedClip,
+    }),
     [
       cell.width,
       cell.flexgrow,
@@ -117,8 +178,9 @@ export default function HeaderCell(props) {
       column.right,
       cell.height,
       isCollapsed,
-      overlay,
+      showCollapsedContent,
       bodyHeight,
+      collapsedClip,
     ],
   );
 
@@ -155,22 +217,32 @@ export default function HeaderCell(props) {
   }, [down, move, up, resize]);
 
   if (isCollapsed) {
+    if (showCollapsedContent) {
+      return (
+        <div
+          className={'wx-RsQD74qC ' + collapsedClassName}
+          style={cellStyle}
+          role="button"
+          aria-label={`Expand column ${cell.text || ''}`}
+          aria-expanded={!cell.collapsed}
+          tabIndex={0}
+          onKeyDown={toggleCollapseColumn}
+          onClick={collapse}
+          data-header-id={setID(column.id)}
+        >
+          <div className="wx-RsQD74qC wx-text" style={collapsedTextStyle}>
+            {cell.text || ''}
+          </div>
+        </div>
+      );
+    }
     return (
       <div
         className={'wx-RsQD74qC ' + collapsedClassName}
         style={cellStyle}
-        role="button"
-        aria-label={`Expand column ${cell.text || ''}`}
-        aria-expanded={!cell.collapsed}
-        tabIndex={0}
-        onKeyDown={toggleCollapseColumn}
-        onClick={collapse}
+        aria-hidden="true"
         data-header-id={setID(column.id)}
-      >
-        <div className="wx-RsQD74qC wx-text" style={collapsedTextStyle}>
-          {cell.text || ''}
-        </div>
-      </div>
+      ></div>
     );
   }
 

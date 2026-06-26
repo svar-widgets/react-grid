@@ -13,6 +13,7 @@ function HeaderFooter({
   type = 'header',
   columnStyle,
   bodyHeight,
+  ...restProps
 }) {
   const api = useContext(storeContext);
   const sizes = useStore(api, '_sizes');
@@ -28,12 +29,16 @@ function HeaderFooter({
       const rowsCount = columns[0][type].length;
       for (let ri = 0; ri < rowsCount; ri++) {
         let inSpan = 0;
+        let left = 0;
         res.push([]);
         columns.forEach((col, ci) => {
           const cell = { ...col[type][ri] };
           if (!inSpan) {
+            cell.left = left;
             res[ri].push(cell);
           }
+
+          left += col.width;
 
           if (cell.colspan > 1) {
             inSpan = cell.colspan - 1;
@@ -108,13 +113,15 @@ function HeaderFooter({
                 bodyHeight={bodyHeight}
                 sortRow={isSort(cell, i, column)}
                 hasSplit={hasSplit}
+                deltaLeft={deltaLeft}
+                {...restProps}
               />
             ) : (
               <FooterCell
                 key={cell.id}
                 cell={cell}
                 columnStyle={columnStyle}
-                column={getColumn(cell.id)}
+                column={column}
                 row={i}
               />
             );
