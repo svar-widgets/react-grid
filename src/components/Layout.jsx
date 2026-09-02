@@ -498,7 +498,12 @@ function Layout(props) {
   useEffect(() => {
     selectedRowsRef.current = selectedRows;
   }, [selectedRows]);
-  
+
+  const focusCellRef = useRef(focusCell);
+  useEffect(() => {
+    focusCellRef.current = focusCell;
+  }, [focusCell]);
+
   const bodyClickHandlers = useRef({
     dblclick: (rowId, ev) => {
       const data = { id: rowId, column: locateID(ev, 'data-col-id') };
@@ -508,7 +513,8 @@ function Layout(props) {
       if (ev.target.closest("input")) return;
       if (postDragRef.current) return;
       const column = locateID(ev, 'data-col-id');
-      if (focusCell?.id !== rowId)
+      const fc = focusCellRef.current;
+      if (fc?.row !== rowId || fc?.column !== column)
         api.exec('focus-cell', {
           row: rowId,
           column,
