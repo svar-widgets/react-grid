@@ -1,3 +1,11 @@
+## 2.7.5
+
+### Fixes
+
+- Incorrect height of the richselect inline filter
+- Use latest lib-state and lib-data-provider
+- Editor and filter packages movws to devDependencies
+
 ## 2.7.4
 
 ### Fixes
