@@ -305,7 +305,6 @@ export default function HeaderCell(props) {
         <div
           className="wx-RsQD74qC wx-grip"
           role="presentation"
-          aria-label="Resize column"
           ref={gripRef}
           onClick={(ev) => ev.stopPropagation()}
         >
